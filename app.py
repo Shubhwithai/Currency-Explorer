@@ -21,30 +21,36 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 # File uploader for currency image
 uploaded_file = st.file_uploader("Upload a currency note or coin image (JPG, PNG, JPEG).", type=["jpg", "png", "jpeg"])
 
-# Feature buttons
-if st.button("Get Currency Description"):
-    if uploaded_file is not None:
-        # Display image preview
-        img = Image.open(uploaded_file)
-        st.image(img, caption="Uploaded Currency", use_column_width=True)
+if uploaded_file is not None:
+    # Open and display the image
+    img = Image.open(uploaded_file)
+    st.image(img, caption="Uploaded Currency", use_column_width=True)
 
-        # Request description from the model
-        response = model.generate_content([
-            "Give a description of the currency in the image. Include its country, name, denomination, and usage. If the image does not show currency, refuse to answer.", img
-        ])
+    # Convert the image to a file path to send as part of the input
+    image_path = pathlib.Path(uploaded_file.name)
 
-        st.write(to_markdown(response.text).data)
-    else:
-        st.warning("Please upload an image of a currency first.")
+    # Feature buttons
+    if st.button("Get Currency Description"):
+        try:
+            # Generate content using the image path
+            response = model.generate_content([
+                "Give a description of the currency in the image. Include its country, name, denomination, and usage. If the image does not show currency, refuse to answer.",
+                str(image_path)
+            ])
+            st.write(to_markdown(response.text).data)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    
+    if st.button("Get Historical Information"):
+        try:
+            # Generate historical information based on the image path
+            response = model.generate_content([
+                "Give me some historical information about the currency shown in the image. Include important events or milestones associated with it.",
+                str(image_path)
+            ])
+            st.write(to_markdown(response.text).data)
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
-# Optional feature: Ask for historical information
-if st.button("Get Historical Information"):
-    if uploaded_file is not None:
-        # Request historical info from the model
-        response = model.generate_content([
-            "Give me some historical information about the currency shown in the image. Include important events or milestones associated with it.", img
-        ])
-
-        st.write(to_markdown(response.text).data)
-    else:
-        st.warning("Please upload an image of a currency first.")
+else:
+    st.warning("Please upload an image of a currency first.")
