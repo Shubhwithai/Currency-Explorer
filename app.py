@@ -15,7 +15,7 @@ st.title('Currency Explorer')
 st.write('Upload a currency note or coin to get detailed information including its country, denomination, and historical facts.')
 
 # API configuration for Google Generative AI
-genai.configure(api_key=st.secrets["api_key"])
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 # File uploader for currency image
