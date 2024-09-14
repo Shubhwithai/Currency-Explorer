@@ -12,7 +12,7 @@ def to_markdown(text):
 
 # App title and description
 st.title('Currency Explorer')
-st.write('Upload a currency note or coin to get detailed information including its country, denomination, and historical facts.')
+st.write('Upload a currency note or coin to get detailed information including its country, denomination, and other relevant details.')
 
 # API configuration for Google Generative AI
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
@@ -29,23 +29,12 @@ if uploaded_file is not None:
     # Convert the image to a file path to send as part of the input
     image_path = pathlib.Path(uploaded_file.name)
 
-    # Feature buttons
+    # Feature button for generating description
     if st.button("Get Currency Description"):
         try:
             # Generate content using the image path
             response = model.generate_content([
                 "Give a description of the currency in the image. Include its country, name, denomination, and usage. If the image does not show currency, refuse to answer.",
-                str(image_path)
-            ])
-            st.write(to_markdown(response.text).data)
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-    
-    if st.button("Get Historical Information"):
-        try:
-            # Generate historical information based on the image path
-            response = model.generate_content([
-                "Give me some historical information about the currency shown in the image. Include important events or milestones associated with it.",
                 str(image_path)
             ])
             st.write(to_markdown(response.text).data)
